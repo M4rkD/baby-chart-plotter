@@ -31,38 +31,35 @@ with open('data/excretions.csv', 'r') as csvfile:
 # id, Time, Type, Notes
 
 # Parse Sleeps
-nsleeps = len(sleeps)
-sleep_array = numpy.zeros(shape=[nsleeps,2], dtype=int)
-i = 0
+sleep_array = []
 for sleep in sleeps:
+    ID = int(sleep[0])
     if len(sleep[2]) > 0:
         start = int(datetime.strptime(sleep[1], '%H:%M:%S %m-%d-%Y').strftime('%s'))
         end = int(datetime.strptime(sleep[2], '%H:%M:%S %m-%d-%Y').strftime('%s'))
-        sleep_array[i] = [start, end]
-        i += 1
+        sleep_array.append([start, end, ID])
     else:
-        print('WARNING: Sleep Skipped!')
+        print(f'WARNING: Skip sleep {ID}')
 
-sleep_array = sleep_array[1:i, :]
+sleep_array = numpy.array(sleep_array)
 sleep_lens = sleep_array[:, 1] - sleep_array[:, 0]
 
 # Parse Feeds
-feed_array = numpy.zeros(shape=[len(feeds),2], dtype=int)
-i = 0
+feed_array = []
 for feed in feeds:
+    ID = int(feed[0])
     if len(feed[2]) > 0:
         start = int(datetime.strptime(feed[1], '%H:%M:%S %m-%d-%Y').strftime('%s'))
         end = int(datetime.strptime(feed[2], '%H:%M:%S %m-%d-%Y').strftime('%s'))
-        feed_array[i] = [start, end]
-        i += 1
+        feed_array.append([start, end, ID])
+    else:
+        print(f'WARNING: Skip feed {ID}')
 
-feed_array = feed_array[1:i, :]
+feed_array = numpy.array(feed_array)
 feed_lens = feed_array[:, 1] - feed_array[:, 0]
 
 # Parse Excretions
 poo_array = [int(datetime.strptime(poo[1], '%H:%M:%S %m-%d-%Y').strftime('%s')) for poo in poos]
-
-feed_lens = feed_array[:, 1] - feed_array[:, 0]
 
 # setup time intervals
 one_minute = 60
@@ -71,8 +68,8 @@ one_day = 24*one_hour
 day_interval = 1
 
 # adjust zero
-zeroval = numpy.min(numpy.append(feed_array, sleep_array))
-maxval = numpy.max(numpy.append(feed_array, sleep_array))
+zeroval = numpy.min(numpy.append(feed_array[:, 0], sleep_array[:, 0]))
+maxval = numpy.max(numpy.append(feed_array[:, 1], sleep_array[:, 1]))
 
 # start time on chosen hour
 start_hour_of_day = 7
@@ -194,22 +191,24 @@ if True:
     ax.axes.set_yticks([])
 
 # add day labels
-if True:
+if False:
     for day in range(int(ndays)):
         plt.text(-5, day, f'{day}  ')
 
 # add hour lines
-if True:
+if False:
     for hour in range(24):
         plt.plot([hour,hour],[0,ndays+1],color='black')
-        plt.text(hour-0.5, -1, f'{hour + 7}')
+        plt.text(hour-0.5, -1, f'{hour + start_hour_of_day}')
 
 # middle line
 plt.plot([12,12],[0,ndays+1],color='white',linewidth=1.0)
 
+# tight layout
+plt.tight_layout()
 
 #ax.set_xlim([0, 24])
 ax.autoscale_view()
-plt.show()
 plt.savefig('plot_figure.png')
+plt.show()
 print('hey')
