@@ -147,6 +147,11 @@ line_color = 'white'
 poo_color = 'black'
 line_width = 2
 
+feed_color = '#FF0000'
+awake_color = '#0000FF'
+sleep_color = '#00FF0' \
+              '0'
+
 # background patch
 patch = patches.Rectangle(
     (0, 0),
