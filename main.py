@@ -92,32 +92,16 @@ sleep_array = sleep_array[-1:0:-1]
 poo_array = poo_array[-1:0:-1]
 
 figure = plt.figure()
-ax = figure.add_subplot(111, aspect='equal')
+ax = figure.add_subplot(111)
 
 
-def plot_rect(info, color):
-    start_hour = info[0]/one_hour
-    duration_hours = (info[1] - info[0])/one_hour
-
-    day = numpy.floor(start_hour / 24 ) * day_interval
-
-    # adjust start_hour based on 24 hour period
-    start_hour = start_hour - day*24
-    end_hour = start_hour + duration_hours
-
-    # check that starting before the hour doesn't end after hour
-    if end_hour > 24:
-        do_plot_rect(day, start_hour, 24 - start_hour, color)
-        do_plot_rect(day + 1, 0, end_hour - 24, color)
-    else:
-        do_plot_rect(day, start_hour, duration_hours, color)
-
-
-def do_plot_rect(day, start_hour, duration_hours, color):
+def do_plot_rect(day, start_hour, duration_hours, color, data_by_hour):
     x = start_hour
     y = day*day_interval
     width = duration_hours
     height = day_interval
+
+    data_by_hour.append([day, start_hour, duration_hours])
 
     patch = patches.Rectangle(
             (x, y),
@@ -133,6 +117,25 @@ def do_plot_rect(day, start_hour, duration_hours, color):
         end_rect = x + width
         plt.plot([end_rect, end_rect], [y, y + 1], color=line_color, linewidth = line_width)
         plt.plot([x, x], [y, y + 1], color=line_color, linewidth = line_width)
+
+
+def plot_rect(info, color, data_by_hour):
+    start_hour = info[0]/one_hour
+    duration_hours = (info[1] - info[0])/one_hour
+
+    day = numpy.floor(start_hour / 24 ) * day_interval
+
+    # adjust start_hour based on 24 hour period
+    start_hour = start_hour - day*24
+    end_hour = start_hour + duration_hours
+
+    # check that starting before the hour doesn't end after hour
+    if end_hour > 24:
+        do_plot_rect(day, start_hour, 24 - start_hour, color, data_by_hour)
+        do_plot_rect(day + 1, 0, end_hour - 24, color, data_by_hour)
+    else:
+        do_plot_rect(day, start_hour, duration_hours, color, data_by_hour)
+
 
 
 ndays = numpy.round((maxval - zeroval)/one_day)
@@ -161,14 +164,17 @@ patch = patches.Rectangle(
 patch.set_color('white')
 ax.add_patch(patch)
 
+
+data_by_hour = {"feed": [], "sleep": [], "poo": []}
+
 for feed in feed_array:
-    plot_rect(feed, feed_color)
+    plot_rect(feed, feed_color, data_by_hour["feed"])
 
 for sleep in sleep_array:
-    plot_rect(sleep, sleep_color)
+    plot_rect(sleep, sleep_color, data_by_hour["sleep"])
 
 for poo in poo_array:
-    plot_rect([poo, poo+10], poo_color)
+    plot_rect([poo, poo+10], poo_color, data_by_hour["poo"])
 
 # outline
 if False:
