@@ -184,7 +184,7 @@ if False:
     plt.plot([0, 24], [ndays, ndays], color=line_color, linewidth=line_width)
 
 # daylines
-if True:
+if False:
     for day in numpy.arange(ndays+1):
         line, = plt.plot([0, 24], [day,day], color=line_color, linewidth=line_width)
 
