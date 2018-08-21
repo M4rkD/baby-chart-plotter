@@ -147,10 +147,9 @@ line_color = 'white'
 poo_color = 'black'
 line_width = 2
 
-feed_color = '#FF0000'
-awake_color = '#0000FF'
-sleep_color = '#00FF0' \
-              '0'
+#feed_color = '#FF0000'
+#awake_color = '#0000FF'
+#sleep_color = '#00FF00'
 
 # background patch
 patch = patches.Rectangle(
@@ -178,8 +177,9 @@ for feed in feed_array:
 for sleep in sleep_array:
     plot_rect(sleep, sleep_color, data_by_hour["sleep"])
 
-for poo in poo_array:
-    plot_rect([poo, poo+10], poo_color, data_by_hour["poo"])
+if False:
+    for poo in poo_array:
+        plot_rect([poo, poo+10], poo_color, data_by_hour["poo"])
 
 # outline
 if False:
